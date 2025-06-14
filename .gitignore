@@ -1,0 +1,15 @@
+# Rails
+backend/log/*
+backend/tmp/*
+backend/storage/*
+backend/config/master.key
+
+# Next.js
+frontend/.next/
+frontend/node_modules/
+frontend/.env*.local
+
+# 共通
+.DS_Store
+.env
+*.log

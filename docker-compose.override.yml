@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  backend:
+    command: >
+      bash -c "
+        bundle check || bundle install &&
+        rm -f tmp/pids/server.pid &&
+        bin/rails db:create &&
+        bin/rails db:migrate &&
+        bin/rails server -b 0.0.0.0
+      "
+    environment:
+      - RAILS_ENV=development
+      - BINDING=0.0.0.0
+
+  frontend:
+    command: >
+      sh -c "
+        npm install &&
+        npm run dev
+      "
+    environment:
+      - NODE_ENV=development
