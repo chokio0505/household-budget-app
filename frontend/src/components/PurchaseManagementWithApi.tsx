@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { Purchase, FilterOptions } from '../types/purchase';
@@ -12,24 +12,26 @@ interface PurchaseManagementWithApiProps {
   // API連携版では外部からのpropsは不要
 }
 
-export const PurchaseManagementWithApi: React.FC<PurchaseManagementWithApiProps> = () => {
+export const PurchaseManagementWithApi: React.FC<
+  PurchaseManagementWithApiProps
+> = () => {
   const [filter, setFilter] = useState<FilterOptions>({
     period: 'month',
     date: new Date(),
   });
-  
+
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null);
   const [isFormLoading, setIsFormLoading] = useState(false);
 
   // API連携フック
   const { purchases, summary, loading, error, refetch } = usePurchases(filter);
-  const { 
-    createPurchase, 
-    updatePurchase, 
+  const {
+    createPurchase,
+    updatePurchase,
     deletePurchase,
     loading: operationLoading,
-    error: operationError 
+    error: operationError,
   } = usePurchaseOperations(handleOperationSuccess);
 
   function handleOperationSuccess() {
@@ -52,7 +54,7 @@ export const PurchaseManagementWithApi: React.FC<PurchaseManagementWithApiProps>
   const handleFormSubmit = async (purchaseData: Omit<Purchase, 'id'>) => {
     try {
       setIsFormLoading(true);
-      
+
       if (editingPurchase) {
         // 編集の場合
         await updatePurchase(editingPurchase.id, purchaseData);
@@ -99,7 +101,9 @@ export const PurchaseManagementWithApi: React.FC<PurchaseManagementWithApiProps>
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <h2 className="text-lg font-semibold text-red-800 mb-2">エラーが発生しました</h2>
+          <h2 className="text-lg font-semibold text-red-800 mb-2">
+            エラーが発生しました
+          </h2>
           <p className="text-red-700">{error}</p>
           <button
             onClick={refetch}
@@ -160,11 +164,7 @@ export const PurchaseManagementWithApi: React.FC<PurchaseManagementWithApiProps>
       </div>
 
       {/* フォームモーダル */}
-      <Modal
-        isOpen={isFormModalOpen}
-        onClose={handleFormCancel}
-        size="lg"
-      >
+      <Modal isOpen={isFormModalOpen} onClose={handleFormCancel} size="lg">
         <PurchaseForm
           onSubmit={handleFormSubmit}
           onCancel={handleFormCancel}

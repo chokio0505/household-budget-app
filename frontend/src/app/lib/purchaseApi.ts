@@ -36,7 +36,7 @@ export const purchaseApi = {
   // 購入一覧取得（フィルタリング・サマリー付き）
   getList: async (filters?: PurchaseFilters): Promise<PurchaseListResponse> => {
     const params = new URLSearchParams();
-    
+
     if (filters?.year !== undefined) {
       params.append('year', filters.year.toString());
     }
@@ -46,12 +46,12 @@ export const purchaseApi = {
     if (filters?.category) {
       params.append('category', filters.category);
     }
-    
+
     const queryString = params.toString();
     const endpoint = queryString ? `/purchases?${queryString}` : '/purchases';
-    
+
     const response = await api.get(endpoint);
-    
+
     // データの変換（Rails APIからのレスポンスをフロントエンド用に調整）
     return {
       purchases: response.purchases.map((purchase: any) => ({
@@ -86,7 +86,7 @@ export const purchaseApi = {
         description: purchaseData.description,
       },
     };
-    
+
     const response = await api.post('/purchases', request);
     return {
       ...response,
@@ -95,11 +95,14 @@ export const purchaseApi = {
   },
 
   // 購入更新
-  update: async (id: string, purchaseData: Partial<Omit<Purchase, 'id'>>): Promise<Purchase> => {
+  update: async (
+    id: string,
+    purchaseData: Partial<Omit<Purchase, 'id'>>
+  ): Promise<Purchase> => {
     const request: UpdatePurchaseRequest = {
       purchase: {},
     };
-    
+
     if (purchaseData.name !== undefined) {
       request.purchase.name = purchaseData.name;
     }
@@ -115,7 +118,7 @@ export const purchaseApi = {
     if (purchaseData.description !== undefined) {
       request.purchase.description = purchaseData.description;
     }
-    
+
     const response = await api.patch(`/purchases/${id}`, request);
     return {
       ...response,

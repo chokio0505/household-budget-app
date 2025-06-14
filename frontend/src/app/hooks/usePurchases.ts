@@ -26,7 +26,7 @@ export const usePurchases = (filters?: FilterOptions): UsePurchasesResult => {
       setError(null);
 
       const apiFilters: PurchaseFilters = {};
-      
+
       if (filters) {
         if (filters.period === 'year') {
           apiFilters.year = filters.date.getFullYear();
@@ -34,7 +34,7 @@ export const usePurchases = (filters?: FilterOptions): UsePurchasesResult => {
           apiFilters.year = filters.date.getFullYear();
           apiFilters.month = filters.date.getMonth() + 1; // JSの月は0ベースなので+1
         }
-        
+
         if (filters.category) {
           apiFilters.category = filters.category;
         }
@@ -45,7 +45,9 @@ export const usePurchases = (filters?: FilterOptions): UsePurchasesResult => {
       setSummary(response.summary);
     } catch (err) {
       console.error('購入データの取得に失敗しました:', err);
-      setError(err instanceof Error ? err.message : '購入データの取得に失敗しました');
+      setError(
+        err instanceof Error ? err.message : '購入データの取得に失敗しました'
+      );
     } finally {
       setLoading(false);
     }
@@ -66,60 +68,80 @@ export const usePurchases = (filters?: FilterOptions): UsePurchasesResult => {
 
 interface UsePurchaseOperationsResult {
   createPurchase: (purchaseData: Omit<Purchase, 'id'>) => Promise<void>;
-  updatePurchase: (id: string, purchaseData: Partial<Omit<Purchase, 'id'>>) => Promise<void>;
+  updatePurchase: (
+    id: string,
+    purchaseData: Partial<Omit<Purchase, 'id'>>
+  ) => Promise<void>;
   deletePurchase: (id: string) => Promise<void>;
   loading: boolean;
   error: string | null;
 }
 
-export const usePurchaseOperations = (onSuccess?: () => void): UsePurchaseOperationsResult => {
+export const usePurchaseOperations = (
+  onSuccess?: () => void
+): UsePurchaseOperationsResult => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createPurchase = useCallback(async (purchaseData: Omit<Purchase, 'id'>) => {
-    try {
-      setLoading(true);
-      setError(null);
-      await purchaseApi.create(purchaseData);
-      onSuccess?.();
-    } catch (err) {
-      console.error('購入の作成に失敗しました:', err);
-      setError(err instanceof Error ? err.message : '購入の作成に失敗しました');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [onSuccess]);
+  const createPurchase = useCallback(
+    async (purchaseData: Omit<Purchase, 'id'>) => {
+      try {
+        setLoading(true);
+        setError(null);
+        await purchaseApi.create(purchaseData);
+        onSuccess?.();
+      } catch (err) {
+        console.error('購入の作成に失敗しました:', err);
+        setError(
+          err instanceof Error ? err.message : '購入の作成に失敗しました'
+        );
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [onSuccess]
+  );
 
-  const updatePurchase = useCallback(async (id: string, purchaseData: Partial<Omit<Purchase, 'id'>>) => {
-    try {
-      setLoading(true);
-      setError(null);
-      await purchaseApi.update(id, purchaseData);
-      onSuccess?.();
-    } catch (err) {
-      console.error('購入の更新に失敗しました:', err);
-      setError(err instanceof Error ? err.message : '購入の更新に失敗しました');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [onSuccess]);
+  const updatePurchase = useCallback(
+    async (id: string, purchaseData: Partial<Omit<Purchase, 'id'>>) => {
+      try {
+        setLoading(true);
+        setError(null);
+        await purchaseApi.update(id, purchaseData);
+        onSuccess?.();
+      } catch (err) {
+        console.error('購入の更新に失敗しました:', err);
+        setError(
+          err instanceof Error ? err.message : '購入の更新に失敗しました'
+        );
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [onSuccess]
+  );
 
-  const deletePurchase = useCallback(async (id: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-      await purchaseApi.delete(id);
-      onSuccess?.();
-    } catch (err) {
-      console.error('購入の削除に失敗しました:', err);
-      setError(err instanceof Error ? err.message : '購入の削除に失敗しました');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [onSuccess]);
+  const deletePurchase = useCallback(
+    async (id: string) => {
+      try {
+        setLoading(true);
+        setError(null);
+        await purchaseApi.delete(id);
+        onSuccess?.();
+      } catch (err) {
+        console.error('購入の削除に失敗しました:', err);
+        setError(
+          err instanceof Error ? err.message : '購入の削除に失敗しました'
+        );
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [onSuccess]
+  );
 
   return {
     createPurchase,

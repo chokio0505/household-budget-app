@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
 class ApiError extends Error {
   constructor(public status: number, message: string, public data?: any) {
@@ -15,14 +16,18 @@ const handleResponse = async (response: Response) => {
     } catch {
       errorData = { message: 'Network error' };
     }
-    throw new ApiError(response.status, errorData.message || `HTTP ${response.status}`, errorData);
+    throw new ApiError(
+      response.status,
+      errorData.message || `HTTP ${response.status}`,
+      errorData
+    );
   }
-  
+
   // 204 No Content の場合は空のレスポンスを返す
   if (response.status === 204) {
     return null;
   }
-  
+
   return response.json();
 };
 

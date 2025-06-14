@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { PurchaseForm } from './PurchaseForm';
