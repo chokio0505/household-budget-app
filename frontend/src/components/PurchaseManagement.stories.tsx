@@ -27,7 +27,7 @@ const generateMockPurchases = () => {
     '医療費',
     '娯楽',
   ];
-  const purchases = [];
+  const purchases: any[] = [];
 
   // 過去6ヶ月のデータを生成
   for (let monthOffset = 0; monthOffset < 6; monthOffset++) {
@@ -58,7 +58,7 @@ const generateMockPurchases = () => {
   }
 
   return purchases.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 };
 

@@ -2,12 +2,14 @@ import React, { useState, useMemo } from 'react';
 import { Purchase, FilterOptions, PurchaseSummary } from '../types/purchase';
 import { PurchaseList } from './PurchaseList';
 import { PeriodFilter } from './PeriodFilter';
+import { PurchaseForm } from './PurchaseForm';
+import { Modal } from './Modal';
 
 interface PurchaseManagementProps {
   purchases: Purchase[];
-  onEditPurchase?: (purchase: Purchase) => void;
+  onEditPurchase?: (purchase: Omit<Purchase, 'id'>, id?: string) => void;
   onDeletePurchase?: (id: string) => void;
-  onAddPurchase?: () => void;
+  onAddPurchase?: (purchase: Omit<Purchase, 'id'>) => void;
 }
 
 export const PurchaseManagement: React.FC<PurchaseManagementProps> = ({
@@ -20,6 +22,9 @@ export const PurchaseManagement: React.FC<PurchaseManagementProps> = ({
     period: 'month',
     date: new Date(),
   });
+
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null);
 
   // フィルタリングされた購入データ
   const filteredPurchases = useMemo(() => {
@@ -69,6 +74,34 @@ export const PurchaseManagement: React.FC<PurchaseManagementProps> = ({
     }
   };
 
+  // フォーム処理のハンドラー
+  const handleAddPurchase = () => {
+    setEditingPurchase(null);
+    setIsFormModalOpen(true);
+  };
+
+  const handleEditPurchase = (purchase: Purchase) => {
+    setEditingPurchase(purchase);
+    setIsFormModalOpen(true);
+  };
+
+  const handleFormSubmit = (purchaseData: Omit<Purchase, 'id'>) => {
+    if (editingPurchase) {
+      // 編集の場合
+      onEditPurchase?.(purchaseData, editingPurchase.id);
+    } else {
+      // 新規追加の場合
+      onAddPurchase?.(purchaseData);
+    }
+    setIsFormModalOpen(false);
+    setEditingPurchase(null);
+  };
+
+  const handleFormCancel = () => {
+    setIsFormModalOpen(false);
+    setEditingPurchase(null);
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
       {/* ヘッダー */}
@@ -76,7 +109,7 @@ export const PurchaseManagement: React.FC<PurchaseManagementProps> = ({
         <h1 className="text-3xl font-bold text-gray-900">家計簿管理</h1>
         {onAddPurchase && (
           <button
-            onClick={onAddPurchase}
+            onClick={handleAddPurchase}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
             + 新しい購入を追加
@@ -103,11 +136,20 @@ export const PurchaseManagement: React.FC<PurchaseManagementProps> = ({
           <PurchaseList
             purchases={filteredPurchases}
             summary={summary}
-            onEditPurchase={onEditPurchase}
+            onEditPurchase={handleEditPurchase}
             onDeletePurchase={onDeletePurchase}
           />
         </div>
       </div>
+
+      {/* フォームモーダル */}
+      <Modal isOpen={isFormModalOpen} onClose={handleFormCancel} size="lg">
+        <PurchaseForm
+          onSubmit={handleFormSubmit}
+          onCancel={handleFormCancel}
+          initialData={editingPurchase || undefined}
+        />
+      </Modal>
     </div>
   );
 };
