@@ -65,10 +65,11 @@ class Api::V1::PurchasesController < ApplicationController
   end
 
   def calculate_summary(purchases)
+    # GROUP BYの前にorder句を削除
     {
       total_amount: purchases.sum(:amount),
       item_count: purchases.count,
-      category_breakdown: purchases.group(:category).sum(:amount)
+      category_breakdown: purchases.reorder('').group(:category).sum(:amount)
     }
   end
 end
