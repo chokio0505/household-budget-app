@@ -1,0 +1,462 @@
+---
+openapi: 3.0.1
+info:
+  title: 家計簿アプリ API
+  version: v1
+  description: 家計簿管理アプリケーションのREST API
+  contact:
+    name: 家計簿アプリ開発チーム
+paths:
+  "/api/v1/purchases":
+    get:
+      summary: 購入一覧取得
+      tags:
+      - Purchases
+      description: 購入履歴の一覧を取得します。年月やカテゴリーでフィルタリングが可能です。
+      parameters:
+      - name: year
+        in: query
+        description: '年（例: 2024）'
+        schema:
+          type: integer
+      - name: month
+        in: query
+        description: '月（例: 6）'
+        schema:
+          type: integer
+      - name: category
+        in: query
+        description: カテゴリー名
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  purchases:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: スーパーでの買い物
+                        amount:
+                          type: number
+                          format: decimal
+                          example: 2500.0
+                        category:
+                          type: string
+                          example: 食費
+                        date:
+                          type: string
+                          format: date
+                          example: '2024-06-14'
+                        description:
+                          type: string
+                          example: 野菜と肉を購入
+                          nullable: true
+                        created_at:
+                          type: string
+                          format: datetime
+                        updated_at:
+                          type: string
+                          format: datetime
+                      required:
+                      - id
+                      - name
+                      - amount
+                      - category
+                      - date
+                      - created_at
+                      - updated_at
+                  summary:
+                    type: object
+                    properties:
+                      total_amount:
+                        type: number
+                        format: decimal
+                        example: 15000.0
+                      item_count:
+                        type: integer
+                        example: 10
+                      category_breakdown:
+                        type: object
+                        additionalProperties:
+                          type: number
+                          format: decimal
+                        example:
+                          食費: 8000.0
+                          交通費: 4500.0
+                          書籍: 2500.0
+                    required:
+                    - total_amount
+                    - item_count
+                    - category_breakdown
+                required:
+                - purchases
+                - summary
+    post:
+      summary: 購入作成
+      tags:
+      - Purchases
+      description: 新しい購入履歴を作成します。
+      parameters: []
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: スーパーでの買い物
+                  amount:
+                    type: number
+                    format: decimal
+                    example: 2500.0
+                  category:
+                    type: string
+                    example: 食費
+                  date:
+                    type: string
+                    format: date
+                    example: '2024-06-14'
+                  description:
+                    type: string
+                    example: 野菜と肉を購入
+                    nullable: true
+                  created_at:
+                    type: string
+                    format: datetime
+                  updated_at:
+                    type: string
+                    format: datetime
+                required:
+                - id
+                - name
+                - amount
+                - category
+                - date
+                - created_at
+                - updated_at
+        '422':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+                    example:
+                      name:
+                      - can't be blank
+                      amount:
+                      - must be greater than 0
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                purchase:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: スーパーでの買い物
+                    amount:
+                      type: number
+                      format: decimal
+                      example: 2500.0
+                    category:
+                      type: string
+                      example: 食費
+                    date:
+                      type: string
+                      format: date
+                      example: '2024-06-14'
+                    description:
+                      type: string
+                      example: 野菜と肉を購入
+                      nullable: true
+                  required:
+                  - name
+                  - amount
+                  - category
+                  - date
+              required:
+              - purchase
+  "/api/v1/purchases/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: 購入ID
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: 購入詳細取得
+      tags:
+      - Purchases
+      description: 指定IDの購入履歴詳細を取得します。
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: スーパーでの買い物
+                  amount:
+                    type: number
+                    format: decimal
+                    example: 2500.0
+                  category:
+                    type: string
+                    example: 食費
+                  date:
+                    type: string
+                    format: date
+                    example: '2024-06-14'
+                  description:
+                    type: string
+                    example: 野菜と肉を購入
+                    nullable: true
+                  created_at:
+                    type: string
+                    format: datetime
+                  updated_at:
+                    type: string
+                    format: datetime
+                required:
+                - id
+                - name
+                - amount
+                - category
+                - date
+                - created_at
+                - updated_at
+        '404':
+          description: 見つからない
+    patch:
+      summary: 購入更新
+      tags:
+      - Purchases
+      description: 指定IDの購入履歴を更新します。
+      parameters: []
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: スーパーでの買い物（更新）
+                  amount:
+                    type: number
+                    format: decimal
+                    example: 3000.0
+                  category:
+                    type: string
+                    example: 食費
+                  date:
+                    type: string
+                    format: date
+                    example: '2024-06-14'
+                  description:
+                    type: string
+                    example: 野菜と肉を購入（更新）
+                    nullable: true
+                  created_at:
+                    type: string
+                    format: datetime
+                  updated_at:
+                    type: string
+                    format: datetime
+                required:
+                - id
+                - name
+                - amount
+                - category
+                - date
+                - created_at
+                - updated_at
+        '404':
+          description: 見つからない
+        '422':
+          description: バリデーションエラー
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                purchase:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: スーパーでの買い物（更新）
+                    amount:
+                      type: number
+                      format: decimal
+                      example: 3000.0
+                    category:
+                      type: string
+                      example: 食費
+                    date:
+                      type: string
+                      format: date
+                      example: '2024-06-14'
+                    description:
+                      type: string
+                      example: 野菜と肉を購入（更新）
+                      nullable: true
+              required:
+              - purchase
+    delete:
+      summary: 購入削除
+      tags:
+      - Purchases
+      description: 指定IDの購入履歴を削除します。
+      responses:
+        '204':
+          description: 削除成功
+        '404':
+          description: 見つからない
+servers:
+- url: http://localhost:3000
+  description: 開発環境
+components:
+  schemas:
+    Purchase:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: スーパーでの買い物
+        amount:
+          type: number
+          format: decimal
+          example: 2500.0
+        category:
+          type: string
+          example: 食費
+        date:
+          type: string
+          format: date
+          example: '2024-06-14'
+        description:
+          type: string
+          example: 野菜と肉を購入
+          nullable: true
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime
+      required:
+      - id
+      - name
+      - amount
+      - category
+      - date
+      - created_at
+      - updated_at
+    PurchaseRequest:
+      type: object
+      properties:
+        purchase:
+          type: object
+          properties:
+            name:
+              type: string
+              example: スーパーでの買い物
+            amount:
+              type: number
+              format: decimal
+              example: 2500.0
+            category:
+              type: string
+              example: 食費
+            date:
+              type: string
+              format: date
+              example: '2024-06-14'
+            description:
+              type: string
+              example: 野菜と肉を購入
+              nullable: true
+          required:
+          - name
+          - amount
+          - category
+          - date
+      required:
+      - purchase
+    Summary:
+      type: object
+      properties:
+        total_amount:
+          type: number
+          format: decimal
+          example: 15000.0
+        item_count:
+          type: integer
+          example: 10
+        category_breakdown:
+          type: object
+          additionalProperties:
+            type: number
+            format: decimal
+          example:
+            食費: 8000.0
+            交通費: 4500.0
+            書籍: 2500.0
+      required:
+      - total_amount
+      - item_count
+      - category_breakdown
+    Error:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string

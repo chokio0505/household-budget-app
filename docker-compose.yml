@@ -30,7 +30,7 @@ services:
       - RAILS_LOG_TO_STDOUT=true
     volumes:
       - ./backend:/app
-      - backend_bundle:/usr/local/bundle
+      - backend_bundle:/app/vendor/bundle
     depends_on:
       db:
         condition: service_healthy
